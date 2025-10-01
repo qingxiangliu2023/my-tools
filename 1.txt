@@ -1,0 +1,240 @@
+https://groups.idme.test/en/groups?client_id=under0armor0client0id00000000000&redirect_uri=https%3A%2F%2Funder-armor.idme.test/checkout/callback&response_type=code&scopes=military,responder
+https://groups.idme.test/en/groups?client_id=c03d3e21b0b829ce34d0fdb4e12584cc&redirect_uri=https%3A%2F%2Fshop.id.me&response_type=code&scopes=military,responder
+
+git diff --diff-filter=ACMRT --name-only origin/master HEAD
+
+
+organization = IDme::Organization.find_or_create_by!(
+  :name     => "IDme Internal Services",
+  :email    => "qingxiang.liu@id.me",
+  :contact  => ["Qingxiang Liu"]
+)
+consumer = IDme::OAuth::Consumer.find_or_initialize_by(
+  :organization           => organization,
+  :name                   => "ID.me Group Service",
+  :display_name           => "ID.me Group Service",
+  :enable_integration_api => true,
+  :enable_private_api     => true,
+  :enable_referee_api     => false,
+  :optin_enabled          => true,
+  :optin_default          => false,
+  :optin_display          => true,
+  :visible                => false,
+  :sandbox                => false,
+  :oauth_id               => "idme0groups0client0id00000000000",
+  :oauth_secret           => "idme0groups0client0secrets000000"
+)
+consumer.callback_uris.build(:endpoint => "https://groups.idme.test/groups/callback")
+consumer.save!
+
+
+
+
+organization = IDme::Organization.find_or_create_by!(
+  :name     => "IDme Under Armor",
+  :email    => "qingxiang.liu@id.me",
+  :contact  => ["Qingxiang Liu"]
+)
+consumer = IDme::OAuth::Consumer.find_or_initialize_by(
+  :organization           => organization,
+  :name                   => "IDme Under Armor",
+  :display_name           => "IDme Under Armor",
+  :enable_integration_api => true,
+  :enable_private_api     => true,
+  :enable_referee_api     => false,
+  :optin_enabled          => true,
+  :optin_default          => false,
+  :optin_display          => true,
+  :visible                => false,
+  :sandbox                => false,
+  :oauth_id               => "under0armor0client0id00000000000",
+  :oauth_secret           => "under0armor0client0secrets000000"
+)
+consumer.callback_uris.build(:endpoint => "https://under-armor.idme.test/checkout/callback")
+consumer.save! if consumer.new_record?
+
+
+
+
+organization = IDme::Organization.find_or_create_by!(
+  :name     => "IDme Addidas",
+  :email    => "qingxiang.liu@id.me",
+  :contact  => "Qingxiang Liu"
+)
+consumer = IDme::OAuth::Consumer.find_or_initialize_by(
+  :organization           => organization,
+  :name                   => "IDme Addidas",
+  :display_name           => "IDme Addidas",
+  :enable_integration_api => true,
+  :enable_private_api     => true,
+  :enable_referee_api     => false,
+  :optin_enabled          => true,
+  :optin_default          => false,
+  :optin_display          => true,
+  :visible                => false,
+  :sandbox                => false,
+  :oauth_id               => "addidas0client0id000000000000000",
+  :oauth_secret           => "addidas0client0secrets0000000000"
+)
+consumer.callback_uris.build(:endpoint => "https://addidas.idme.test/checkout/callback")
+consumer.save! if consumer.new_record?
+
+
+
+
+organization = IDme::Organization.find_by(:name => "IDme Internal Services")
+organization = IDme::Organization.find_by(:name => "IDme Under Armor")
+organization = IDme::Organization.find_by(:name => "IDme Addidas")
+
+
+
+policy = IDme::Policy.find_or_create_by!(
+  :organization     => organization,
+  :name             => "Military",
+  :handle           => "military",
+  :active           => true,
+  :consent_mode     => IDme::Policy::CONSENT_SKIP,
+  :multifactor_mode => IDme::Policy::MFA_DISABLED
+)
+
+policy.blocks.find_or_create_by!(
+  :group    => IDme::Group.military,
+  :level    => 1
+).update(:options => IDme::Group.military.options)
+
+
+policy = IDme::Policy.find_or_create_by!(
+  :organization     => organization,
+  :name             => "Nurse",
+  :handle           => "nurse",
+  :active           => true,
+  :consent_mode     => IDme::Policy::CONSENT_SKIP,
+  :multifactor_mode => IDme::Policy::MFA_DISABLED
+)
+
+policy.blocks.find_or_create_by!(
+  :group    => IDme::Group.nurse,
+  :level    => 1
+).update(:options => IDme::Group.nurse.options)
+
+
+policy = IDme::Policy.find_or_create_by!(
+  :organization     => organization,
+  :name             => "First Responder",
+  :handle           => "responder",
+  :active           => true,
+  :consent_mode     => IDme::Policy::CONSENT_SKIP,
+  :multifactor_mode => IDme::Policy::MFA_DISABLED
+)
+
+policy.blocks.find_or_create_by!(
+  :group    => IDme::Group.responder,
+  :level    => 1
+).update(:options => IDme::Group.responder.options)
+
+
+
+
+
+organization = IDme::Organization.find_by(:name => "IDme Internal Services")
+policy = IDme::Policy.find_or_create_by!(
+  :organization     => organization,
+  :name             => "Basic Authentication",
+  :handle           => "login",
+  :active           => true,
+  :consent_mode     => IDme::Policy::CONSENT_SKIP,
+  :multifactor_mode => IDme::Policy::MFA_DISABLED
+)
+
+
+
+
+{"client_id"=>"idme0groups0client0id00000000000",
+ "redirect_uri"=>"https://groups.idme.test/groups/callback",
+ "response_type"=>"code",
+ "scope"=>"login",
+ "state"=>"military,nurse",
+ "format"=>false,
+ "controller"=>"oauth/authorizations",
+ "action"=>"handle"}
+
+client_id = 'idme0groups0client0id00000000000'
+client_secret = 'idme0groups0client0secrets000000'
+idp_host = 'https://api.idme.test'
+code = 'eaafec5854ac4beaadeaca2b5dc2bd0f'
+callback_url = 'https://groups.idme.test/groups/callback'
+oauth_client ||= OAuth2::Client.new(
+    client_id,
+    client_secret,
+    site: idp_host,
+    connection_opts: { request: { open_timeout: 2, timeout: 10 },ssl: { verify: false } }
+)
+oauth_client.auth_code.get_token(code, redirect_uri: callback_url)
+
+
+
+
+policy = IDme::Policy.find(80)
+user = IDme::User.first
+consumer = IDme::Consumer.find(22)
+request = IDme::IdentityRequest.last
+transaction = IDme::IdentityRequest.find(68)
+verification = IDme::VerificationRequest.find(32)
+
+policy = IDme::Policy.find(80)
+user = IDme::User.first
+consumer = IDme::Consumer.find(22)
+request = IDme::IdentityRequest.last
+transaction = IDme::IdentityRequest.find(68)
+verification = IDme::VerificationRequest.find(32)
+
+
+query GetOrganization {
+  organizationEntities(
+    condition: {
+      organization:"6192",
+      provenance: "1"
+  	}
+  ) {
+    edges {
+      node {
+        organization
+        provenance
+        fullText
+      }
+    }
+  }
+}
+
+
+
+curl 'http://localhost:25000/graphql' \
+  -H 'Content-Type: application/json' \
+  --data-raw '{"query":"query GetOrganization {\n  organizationEntities(\n    condition: {\n      organization:\"6192\", \n      provenance: \"1\"\n  \t}\n  ) {\n    edges {\n      node {\n        organization\n        provenance\n        fullText\n      }\n    }\n  }\n}\n"}' | jq
+
+
+query -> query GetOrganization {
+  organizationEntities(
+    condition: {
+      organization: "6192"
+      provenance: "1"
+    }
+  ) {
+    edges {
+      node {
+        organization
+        provenance
+        fullText
+      }
+    }
+  }
+}
+
+{
+  "query" : "query GetOrganization {\n  organizationEntities(\n    condition: {\n      organization:\"6192\", \n      provenance: \"1\"\n   }\n  ) {\n    edges {\n      node {\n        organization\n        provenance\n        fullText\n      }\n    }\n  }\n}\n"}
+{
+  "query" : "query GetOrganization {\n  organizationEntities(\n    condition: {\n      organization: \"6192\"\n      provenance: \"1\"\n    }\n  ) {\n    edges {\n      node {\n        organization\n        provenance\n        fullText\n      }\n    }\n  }\n}\n"
+}
+
+
+
